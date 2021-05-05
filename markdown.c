@@ -1,9 +1,10 @@
+#include <stdlib.h>
 #include <stdio.h> // include a standard I/O library
 #include <string.h> // include a library for manipulating strings
 int main(int argc, char *argv[]) { // define the function that automatically runs
 	char read_file[300]; // make a string of 300 characters or less named "read_file"
 	char types[10][20] = {"# ", "## ", ""}; // make a array of strings named "types"
-	char converted_types[10][20] = {"<h1>", "<h2>"}; // make another array of strings named "converted_types"
+	char converted_types[10][20] = {"<h1>", "</h1>", "<h2>", "</h2>"}; // make another array of strings named "converted_types"
 	if (argc > 2) { // if there are two or more parameters then...
 		FILE *file; // create a pointer to a file
 		int value; // create a integer varible
@@ -19,22 +20,35 @@ int main(int argc, char *argv[]) { // define the function that automatically run
 			printf("Error: incorrect path to file\n");
 		}
 		if (strlen(read_file) != 0) {
+			file = fopen(argv[2], "wb");
+			if (!file) {
+				printf("Error: incorrect path to file\n");
+				exit(1);
+			}
+			int endOfLine = 0;
+			int j = 0;
+			char c;
+			while(c = read_file[j]) {
+				if(c == '\n') {
+					endOfLine = j;
+					break;
+				}
+				j++;
+			}
 			char *type = types[0];
 			int i = 0;
+			char line[255];
 			do {
-				if (!strncmp(type, read_file, strlen(type))) {
-					printf("Found a '%s'!\n", type);
+				strncpy(line, read_file, endOfLine);
+				line[endOfLine] = 0;
+				if (!strncmp(type, line, strlen(type))) {
+					printf("Found a '%s' in '%s'!\n", type, &line[strlen(type)]);
+					fprintf(file, "<!DOCTYPE html><html><body>%s%s%s</body></html>\n", converted_types[0], &line[strlen(type)], converted_types[0 + 1]);
 				}
 				i++;
 				type = types[i];
 			} while(*type);
-			file = fopen(argv[2], "wb");
-			if (file) {
-				fprintf(file, "<!DOCTYPE html><html><body><pre>%s</pre></body></html>\n", read_file);
-				fclose(file);
-			} else {
-				printf("Error: incorrect path to file\n");
-			}
+			fclose(file);
 		}
 	} else {
 		printf("Error: needs paths to files\n");
