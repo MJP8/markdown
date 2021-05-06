@@ -1,6 +1,7 @@
 #include <stdlib.h> // include a library
 #include <stdio.h> // include a standard I/O library
 #include <string.h> // include a library for manipulating strings
+void findLine(char readFrom[300], int *end, char character);
 int main(int argc, char *argv[]) { // define the function that automatically runs
 	char read_file[300]; // make a string of 300 characters or less named "read_file"
 	char types[10][20] = {"# ", "## ", ""}; // make a array of strings named "types"
@@ -26,15 +27,8 @@ int main(int argc, char *argv[]) { // define the function that automatically run
 				exit(1); // exit with an error
 			} else { // otherwise...
 				int endOfLine = 0; // create a integer varible named "endOfLine" set to zero
-				int j = 0; // create a integer varible named "j" set to zero
 				char c; // create a character varible name "c"
-				while(c = read_file[j]) { // while c = read_file's j character do...
-					if(c == '\n') { // if c is the end of the line then...
-						endOfLine = j; // set endOfLine to j
-						break; // exit the loop
-					}
-					j++; // increase j
-				}
+				findLine(read_file, &endOfLine, c);
 				char *type = types[0]; // create a pointer to a pointer
 				int i = 0; // create a integer varible named "i" set to zero
 				char line[255]; // create a string named "line"
@@ -55,4 +49,14 @@ int main(int argc, char *argv[]) { // define the function that automatically run
 		printf("Error: needs paths to files\n"); // print a error
 	}
 	return 0; // return zero
+}
+void findLine(char readFrom[300], int *end, char character) {
+	int j = 0;
+	while(character = readFrom[j]) { // while c = read_file's j character do...
+		if(character == '\n') { // if c is the end of the line then...
+			*end = j; // set endOfLine to j
+			break; // exit the loop
+		}
+		j++; // increase j
+	}
 }
